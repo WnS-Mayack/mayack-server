@@ -1,0 +1,48 @@
+  spring:
+    mvc:
+      pathmatch:
+        matching-strategy: ant_path_matcher
+    logging:
+      level:
+        root: INFO
+    servlet:
+      multipart:
+        max-file-size: 10MB
+        max-request-size: 10MB
+    thymeleaf:
+      cache: false
+    datasource:
+      url: jdbc:mysql://${ip}:3306/${database}?useSSL=false&allowPublicKeyRetrieval=true&useUnicode=true&serverTimezone=Asia/Seoul&characterSetResults=UTF-8&characterEncoding=UTF-8
+      username: admin
+      password: ${password}
+      driver-class-name: com.mysql.cj.jdbc.Driver
+    jpa:
+      database: mysql
+      database-platform: org.hibernate.dialect.MySQL8Dialect
+      generate-ddl: true
+      show-sql: true
+      properties:
+        hibernate:
+          format_sql: true
+          jdbc:
+            time_zone: Asia/Seoul
+      hibernate:
+        ddl-auto: update
+
+  jwt:
+    secret: ${secret_key}
+  ## local
+  database: mayak
+  password: p39pwt12!
+  ip: mayak.clhum1zhqpie.ap-northeast-2.rds.amazonaws.com
+  secret_key: VlwEyVBsYt9V7zq57TejMnVUyzblYcfPQye08f7MGVA9XkHa
+  ##aws
+  #mail_username: donghunkim1101@gmail.com
+  #mail_password: utgoumexcfqezlfd
+  #database: reduck
+  #password: p39pwt12!
+  #username: admin
+  #ip: reduckdb.clhum1zhqpie.ap-northeast-2.rds.amazonaws.com
+  #secret_key: VlwEyVBsYt9V7zq57TejMnVUyzblYcfPQye08f7MGVA9XkHa
+
+
