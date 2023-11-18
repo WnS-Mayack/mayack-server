@@ -1,5 +1,6 @@
 package com.example.mayak.controller
 
+import com.example.mayak.dto.PostDto
 import com.example.mayak.dto.PostKeywordDto
 import com.example.mayak.dto.UserDto
 import com.example.mayak.entity.QUser
@@ -64,13 +65,13 @@ class UserController(
     @GetMapping()
     fun get(@RequestHeader headers: HttpHeaders
     ): UserDto {
-       return userService.get(headers)
+        return userService.get(headers)
     }
 
     @GetMapping("/sellItems")
     fun getSellItems(@RequestHeader headers: HttpHeaders
-    ) {
-
+    ): List<PostDto> {
+        return userService.getSellItems(headers)
     }
 
     @GetMapping("/buyItems")

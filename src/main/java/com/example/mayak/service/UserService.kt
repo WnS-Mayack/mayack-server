@@ -2,6 +2,7 @@ package com.example.mayak.service
 
 import com.example.mayak.Repository.RegionRepository
 import com.example.mayak.Repository.UserRepository
+import com.example.mayak.dto.PostDto
 import com.example.mayak.dto.PostKeywordDto
 import com.example.mayak.dto.UserDto
 import com.example.mayak.entity.*
@@ -78,5 +79,30 @@ class UserService(
         val self = queryFactory.selectFrom(QUser.user).where(QUser.user.account.eq(account)).fetchOne()
                 ?: throw IllegalArgumentException("사용자가 존재 하지 않음. id : $account")
         return UserDto.from(self)
+    }
+
+    fun getSellItems(headers: HttpHeaders): List<PostDto> {
+        val account = HttpHeadersParser.getAccount(headers)
+        val self = queryFactory.selectFrom(QUser.user).where(QUser.user.account.eq(account)).fetchOne()
+                ?: throw IllegalArgumentException("사용자가 존재 하지 않음. id : $account")
+
+        val sellOrders = queryFactory.selectFrom(QSellOrders.sellOrders)
+                .where(QSellOrders.sellOrders.user.eq(self))
+                .fetch()
+
+
+        val sellPosts = sellOrders.map {
+            it.post
+        }.toMutableList()
+
+        return sellPosts.map {
+            val post = queryFactory.selectFrom(QPost.post)
+                    .where(QPost.post.eq(it))
+                    .fetchOne() ?: throw IllegalArgumentException("에러")
+
+            PostDto.fromPostForMyPage(post)
+        }.toList()
+
+
     }
 }
