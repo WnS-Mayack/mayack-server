@@ -22,10 +22,11 @@ data class PostDto(
         var modifyAt: LocalDateTime,
         var author: UserDto,
         var comments: MutableList<CommentDto>,
-        var itemStatus: ItemStatus
+        var itemStatus: ItemStatus,
+        var likeCount: Int
 ) {
     companion object {
-        fun from(post: Post): PostDto {
+        fun from(post: Post, likeCount: Int): PostDto {
             return PostDto(
                     id = post.id,
                     description = post.description,
@@ -36,7 +37,8 @@ data class PostDto(
                     modifyAt = post.modifyAt,
                     author = UserDto.from(post.user),
                     comments = post.comments.map { CommentDto.from(it) }.toMutableList(),
-                    itemStatus = post.itemStatus
+                    itemStatus = post.itemStatus,
+                    likeCount = likeCount
             )
         }
     }

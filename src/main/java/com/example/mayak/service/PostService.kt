@@ -24,7 +24,14 @@ class PostService(
         val post = queryFactory.selectFrom(QPost.post)
                 .where(QPost.post.id.eq(postId))
                 .fetchOne() ?: throw IllegalArgumentException("게시글을 찾을 수 없습니다. id : $postId")
-        return PostDto.from(post)
+
+        val postLikes = queryFactory.select(QPostLike.postLike)
+                .from(QPostLike.postLike)
+                .where(QPostLike.postLike.post.eq(post))
+                .fetch()
+        val likeCount = postLikes.size
+
+        return PostDto.from(post, likeCount)
     }
 
     @Transactional(readOnly = true)
@@ -37,8 +44,14 @@ class PostService(
                 )
                 .orderBy(QPost.post.id.desc())
                 .fetch()
+
         return posts.map {
-            PostDto.from(it)
+            val postLikes = queryFactory.select(QPostLike.postLike)
+                    .from(QPostLike.postLike)
+                    .where(QPostLike.postLike.post.eq(it))
+                    .fetch()
+            val likeCount = postLikes.size
+            PostDto.from(it, likeCount)
         }.toList()
     }
 
