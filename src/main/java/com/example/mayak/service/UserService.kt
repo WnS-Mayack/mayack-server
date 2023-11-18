@@ -25,10 +25,9 @@ class UserService(
 
     @Transactional
     fun signUp(requset: SignUpRequest) {
-        val region = regionRepository.findById(requset.region).orElseThrow()
-                ?: throw IllegalArgumentException("지역을 찾을 수 없음. ${requset.region}")
+
         val user = User(
-                region = region,
+                region = requset.region,
                 account = requset.account,
                 password = requset.password,
                 profileImgPath = requset.profileImagePath,

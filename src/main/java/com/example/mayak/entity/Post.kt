@@ -8,12 +8,13 @@ class Post(
         imagePath: String,
         price: Int,
         region: String,
-        title: String
-) {
+        title: String,
+        user: User
+) : Auditing() {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
-    var id: Long? = null
+    var id: Long = 0L
 
     var description = description
 
@@ -23,7 +24,9 @@ class Post(
 
     var region = region
 
-    var string = title
+    var title = title
 
+    @ManyToOne
+    var user: User = user
 
 }
