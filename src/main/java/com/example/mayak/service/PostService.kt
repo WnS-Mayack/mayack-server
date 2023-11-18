@@ -2,11 +2,10 @@ package com.example.mayak.service
 
 import com.example.mayak.Repository.PostRepository
 import com.example.mayak.dto.PostDto
-import com.example.mayak.entity.Post
-import com.example.mayak.entity.QPost
-import com.example.mayak.entity.QUser
+import com.example.mayak.entity.*
 import com.example.mayak.requests.DefaultFilter
 import com.example.mayak.requests.PostRequest
+import com.example.mayak.utils.HttpHeadersParser
 import com.example.mayak.utils.QueryDslUtils
 import com.querydsl.jpa.impl.JPAQueryFactory
 import org.springframework.http.HttpHeaders
@@ -17,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional
 class PostService(
         private val postRespository: PostRepository,
         private val queryFactory: JPAQueryFactory,
+        private val postLikeRepository: PostLikeRepository,
 ) {
 
     @Transactional(readOnly = true)
@@ -58,6 +58,34 @@ class PostService(
                 user = user
         )
         postRespository.save(post)
+    }
+
+    @Transactional
+    fun postLike(headers: HttpHeaders, postId: Long) {
+        val account = HttpHeadersParser.getAccount(headers)
+        val self = queryFactory.selectFrom(QUser.user)
+                .where(QUser.user.account.eq(account))
+                .fetchOne() ?: throw IllegalArgumentException("사용자를 찾을 수 없습니다. id : $account")
+
+        val post = queryFactory.selectFrom(QPost.post)
+                .where(QPost.post.id.eq(postId))
+                .fetchOne() ?: throw IllegalArgumentException("게시글을 찾을 수 없습니다. id : $postId")
+
+        val existLike = queryFactory.selectFrom(QPostLike.postLike)
+                .where(QPostLike.postLike.user.eq(self),
+                        QPostLike.postLike.post.eq(post))
+                .fetchOne()
+
+        if (existLike != null) {
+            // 이미 좋아요 누른 게시글.
+            return postLikeRepository.delete(existLike)
+        }
+        // 처음 좋아요 누른 로직
+        val postLike = PostLike(
+                post = post,
+                user = self
+        )
+        postLikeRepository.save(postLike)
     }
 
 }
