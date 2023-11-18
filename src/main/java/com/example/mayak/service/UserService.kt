@@ -2,19 +2,25 @@ package com.example.mayak.service
 
 import com.example.mayak.Repository.RegionRepository
 import com.example.mayak.Repository.UserRepository
-import com.example.mayak.entity.User
+import com.example.mayak.dto.PostKeywordDto
+import com.example.mayak.entity.*
 import com.example.mayak.requests.LoginRequest
+import com.example.mayak.requests.PostKeywordRequest
 import com.example.mayak.requests.SignUpRequest
+import com.example.mayak.utils.HttpHeadersParser
+import com.querydsl.jpa.impl.JPAQueryFactory
+import org.springframework.http.HttpHeaders
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.lang.IllegalArgumentException
+import kotlin.IllegalArgumentException
 
 @Service
 class UserService(
         private val userRepository: UserRepository,
         private val regionRepository: RegionRepository,
-
-        ) {
+        private val queryFactory: JPAQueryFactory,
+        private val postKeywordRepository: PostKeywordRepository
+) {
 
     @Transactional
     fun login(requset: LoginRequest) {
@@ -34,5 +40,34 @@ class UserService(
                 nickname = requset.nickname
         )
         userRepository.save(user)
+    }
+
+    fun getKeywords(headers: HttpHeaders): PostKeywordDto {
+        val account = HttpHeadersParser.getAccount(headers)
+        val user = queryFactory.selectFrom(QUser.user)
+                .where(QUser.user.account.eq(account))
+                .fetchOne() ?: throw IllegalArgumentException("사용자를 찾을 수 없음. id : $account")
+
+        val postKeywords = queryFactory.select(QPostKeyword.postKeyword.keyword)
+                .from(QPostKeyword.postKeyword)
+                .where(QPostKeyword.postKeyword.user.eq(user))
+                .fetch()
+
+        return PostKeywordDto.from(postKeywords)
+
+    }
+
+    @Transactional
+    fun createKeywords(request: PostKeywordRequest, headers: HttpHeaders) {
+        val account = HttpHeadersParser.getAccount(headers)
+        val user = queryFactory.selectFrom(QUser.user).where(QUser.user.account.eq(account)).fetchOne()
+                ?: throw IllegalArgumentException("사용자가 존재 하지 않음. id : $account")
+        val postKeywords = request.keywords.map {
+            PostKeyword(
+                    user = user,
+                    keyword = it
+            )
+        }.toList()
+        postKeywordRepository.saveAll(postKeywords)
     }
 }
