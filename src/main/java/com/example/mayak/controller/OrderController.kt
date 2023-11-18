@@ -16,7 +16,7 @@ class OrderController(
         private val orderService: OrderService
 ) {
     //주문 queue에 쌓는다.
-    @PostMapping("/buy/{postId}")
+    @PostMapping("/{postId}/buy")
     fun buyItem(
             @PathVariable("postId") postId: Long,
             @RequestHeader headers: HttpHeaders
@@ -25,17 +25,19 @@ class OrderController(
     }
 
     // 해당 상품에 대한 구매 요청 목록을 조회한다.
-    @GetMapping("/buy/{postId}")
+    @GetMapping("/{postId}/buy")
     fun getBuyOrders(@PathVariable("postId") postId: Long): OrderQueueDto {
         return orderService.getOrdersQueue(postId)
     }
 
-    @PostMapping("/sell/{postId}")
+    // 판매 확정.
+    @PostMapping("/{postId}/sell/{customerId}")
     fun sellItem(
             @PathVariable("postId") postId: Long,
+            @PathVariable("customerId") customerId: Long,
             @RequestHeader headers: HttpHeaders
     ) {
-        orderService.sellItem(headers, postId)
+        orderService.sellItem(headers, postId, customerId)
     }
 
 }

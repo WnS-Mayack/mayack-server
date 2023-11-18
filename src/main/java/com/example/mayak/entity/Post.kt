@@ -31,4 +31,16 @@ class Post(
 
     @OneToMany(mappedBy = "post")
     var comments: MutableList<Comment> = mutableListOf()
+
+    @Enumerated(EnumType.STRING)
+    var itemStatus: ItemStatus = ItemStatus.ON_SALE
+
+    fun sell() {
+        this.itemStatus = ItemStatus.SOLD_OUT
+    }
+}
+
+enum class ItemStatus {
+    ON_SALE,
+    SOLD_OUT
 }
