@@ -1,7 +1,9 @@
 package com.example.mayak.controller
 
+import com.example.mayak.dto.PostKeywordDto
 import com.example.mayak.entity.PostKeyword
 import com.example.mayak.requests.LoginRequest
+import com.example.mayak.requests.PostKeywordRequest
 import com.example.mayak.requests.SignUpRequest
 import com.example.mayak.service.UserService
 import org.springframework.http.HttpHeaders
@@ -35,7 +37,15 @@ class UserController(
     @GetMapping("/keywords")
     fun getKeywords(
             @RequestHeader headers: HttpHeaders
-    ): List<String> {
+    ): PostKeywordDto {
         return userService.getKeywords(headers)
+    }
+
+    @PostMapping("/keywords")
+    fun createKeywords(
+            @RequestBody keywords: PostKeywordRequest,
+            @RequestHeader headers : HttpHeaders
+    ) {
+        return userService.createKeywords(keywords, headers)
     }
 }
