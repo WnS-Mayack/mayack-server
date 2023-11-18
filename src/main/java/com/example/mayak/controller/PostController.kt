@@ -50,4 +50,13 @@ class PostController(
     ) {
         postService.create(postRequest, header)
     }
+
+    // 게시글 좋아요 생성
+    @PostMapping("/like/{id}")
+    fun postLike(
+            @PathVariable("id") postId: Long,
+            @RequestHeader headers: HttpHeaders
+    ) {
+        postService.postLike(headers, postId)
+    }
 }
