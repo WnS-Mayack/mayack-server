@@ -13,7 +13,7 @@
       cache: false
     datasource:
       url: jdbc:mysql://${ip}:3306/${database}?useSSL=false&allowPublicKeyRetrieval=true&useUnicode=true&serverTimezone=Asia/Seoul&characterSetResults=UTF-8&characterEncoding=UTF-8
-      username: admin
+      username: root
       password: ${password}
       driver-class-name: com.mysql.cj.jdbc.Driver
     jpa:
@@ -34,7 +34,8 @@
   ## local
   database: mayak
   password: p39pwt12!
-  ip: mayak.clhum1zhqpie.ap-northeast-2.rds.amazonaws.com
+  ip: localhost
+#  ip: mayak.clhum1zhqpie.ap-northeast-2.rds.amazonaws.com
   secret_key: VlwEyVBsYt9V7zq57TejMnVUyzblYcfPQye08f7MGVA9XkHa
   ##aws
   #mail_username: donghunkim1101@gmail.com
