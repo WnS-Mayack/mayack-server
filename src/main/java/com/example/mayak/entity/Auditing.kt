@@ -14,8 +14,8 @@ import java.time.LocalDateTime
 class Auditing {
 
     @CreatedDate
-    var createAt: LocalDateTime? = null
+    var createAt: LocalDateTime = LocalDateTime.MIN
 
     @LastModifiedDate
-    var modifyAt: LocalDateTime ? = null
+    var modifyAt: LocalDateTime = LocalDateTime.MIN
 }

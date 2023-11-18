@@ -8,8 +8,9 @@ class Post(
         imagePath: String,
         price: Int,
         region: String,
-        title: String
-) {
+        title: String,
+        user: User
+) : Auditing() {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
@@ -25,5 +26,7 @@ class Post(
 
     var title = title
 
+    @ManyToOne
+    var user: User = user
 
 }

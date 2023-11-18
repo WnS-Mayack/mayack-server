@@ -4,7 +4,7 @@ import jakarta.persistence.*
 
 @Entity
 class User(
-        region: Region,
+        region: String,
         account: String,
         password: String,
         profileImgPath: String?,
@@ -14,8 +14,7 @@ class User(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0L
 
-    @OneToOne
-    var region: Region = region
+    var region: String = region
         protected set
 
     @Column(unique = true)
