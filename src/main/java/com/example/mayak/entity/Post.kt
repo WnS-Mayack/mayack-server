@@ -29,4 +29,6 @@ class Post(
     @ManyToOne
     var user: User = user
 
+    @OneToMany(mappedBy = "post")
+    var comments: MutableList<Comment> = mutableListOf()
 }
