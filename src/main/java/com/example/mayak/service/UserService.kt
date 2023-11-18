@@ -105,4 +105,27 @@ class UserService(
 
 
     }
+
+    fun getBuyItems(headers: HttpHeaders): List<PostDto> {
+        val account = HttpHeadersParser.getAccount(headers)
+        val self = queryFactory.selectFrom(QUser.user).where(QUser.user.account.eq(account)).fetchOne()
+                ?: throw IllegalArgumentException("사용자가 존재 하지 않음. id : $account")
+
+        val buyOrders = queryFactory.selectFrom(QBuyOrders.buyOrders)
+                .where(QBuyOrders.buyOrders.user.eq(self))
+                .fetch()
+
+
+        val buyPosts = buyOrders.map {
+            it.post
+        }.toMutableList()
+
+        return buyPosts.map {
+            val post = queryFactory.selectFrom(QPost.post)
+                    .where(QPost.post.eq(it))
+                    .fetchOne() ?: throw IllegalArgumentException("에러")
+
+            PostDto.fromPostForMyPage(post)
+        }.toList()
+    }
 }

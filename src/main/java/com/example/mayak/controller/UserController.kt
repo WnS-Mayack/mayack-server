@@ -76,7 +76,8 @@ class UserController(
 
     @GetMapping("/buyItems")
     fun getBuyItems(@RequestHeader headers: HttpHeaders
-    ) {
+    ): List<PostDto> {
+        return userService.getBuyItems(headers)
 
     }
 
