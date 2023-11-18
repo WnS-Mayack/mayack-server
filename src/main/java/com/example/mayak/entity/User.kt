@@ -27,7 +27,7 @@ class User(
     var profileImgPath: String? = profileImgPath
         protected set
 
-    @Column(unique = true)
+//    @Column(unique = true)
     var nickname = nickname
         protected set
 

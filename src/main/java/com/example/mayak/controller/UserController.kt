@@ -2,10 +2,12 @@ package com.example.mayak.controller
 
 import com.example.mayak.dto.PostKeywordDto
 import com.example.mayak.entity.PostKeyword
+import com.example.mayak.entity.QUser
 import com.example.mayak.requests.LoginRequest
 import com.example.mayak.requests.PostKeywordRequest
 import com.example.mayak.requests.SignUpRequest
 import com.example.mayak.service.UserService
+import com.querydsl.jpa.impl.JPAQueryFactory
 import org.springframework.http.HttpHeaders
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
@@ -17,7 +19,8 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping("/api/users")
 class UserController(
-        private val userService: UserService
+        private val userService: UserService,
+        private val queryFactory: JPAQueryFactory
 ) {
 
     @PostMapping("/login")
@@ -31,6 +34,15 @@ class UserController(
     fun signUp(
             @RequestBody loginRequest: SignUpRequest
     ) {
+
+        val account = loginRequest.account
+
+        val existUser = queryFactory.selectFrom(QUser.user)
+                .where(QUser.user.account.eq(account))
+                .fetchOne()
+
+        if (existUser != null) throw IllegalArgumentException("user id가 중복되었습니다.")
+
         userService.signUp(loginRequest)
     }
 
@@ -44,7 +56,7 @@ class UserController(
     @PostMapping("/keywords")
     fun createKeywords(
             @RequestBody keywords: PostKeywordRequest,
-            @RequestHeader headers : HttpHeaders
+            @RequestHeader headers: HttpHeaders
     ) {
         return userService.createKeywords(keywords, headers)
     }
