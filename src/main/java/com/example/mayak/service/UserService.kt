@@ -128,4 +128,28 @@ class UserService(
             PostDto.fromPostForMyPage(post)
         }.toList()
     }
+
+    fun getlikeItems(headers: HttpHeaders): List<PostDto> {
+
+        val account = HttpHeadersParser.getAccount(headers)
+        val self = queryFactory.selectFrom(QUser.user).where(QUser.user.account.eq(account)).fetchOne()
+                ?: throw IllegalArgumentException("사용자가 존재 하지 않음. id : $account")
+
+        val likes = queryFactory.selectFrom(QPostLike.postLike)
+                .where(QPostLike.postLike.user.eq(self))
+                .fetch()
+
+
+        val likePosts = likes.map {
+            it.post
+        }.toMutableList()
+
+        return likePosts.map {
+            val post = queryFactory.selectFrom(QPost.post)
+                    .where(QPost.post.eq(it))
+                    .fetchOne() ?: throw IllegalArgumentException("에러")
+
+            PostDto.fromPostForMyPage(post)
+        }.toList()
+    }
 }

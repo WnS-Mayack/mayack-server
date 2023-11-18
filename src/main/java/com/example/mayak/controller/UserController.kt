@@ -81,9 +81,10 @@ class UserController(
 
     }
 
-    @GetMapping("/likeItmes")
+    @GetMapping("/likeItems")
     fun getLikeItems(@RequestHeader headers: HttpHeaders
-    ) {
+    ): List<PostDto> {
+        return userService.getlikeItems(headers)
 
     }
 }
