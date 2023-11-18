@@ -3,6 +3,7 @@ package com.example.mayak.service
 import com.example.mayak.Repository.RegionRepository
 import com.example.mayak.Repository.UserRepository
 import com.example.mayak.dto.PostKeywordDto
+import com.example.mayak.dto.UserDto
 import com.example.mayak.entity.*
 import com.example.mayak.requests.LoginRequest
 import com.example.mayak.requests.PostKeywordRequest
@@ -69,5 +70,13 @@ class UserService(
             )
         }.toList()
         postKeywordRepository.saveAll(postKeywords)
+    }
+
+    @Transactional(readOnly = true)
+    fun get(headers: HttpHeaders): UserDto {
+        val account = HttpHeadersParser.getAccount(headers)
+        val self = queryFactory.selectFrom(QUser.user).where(QUser.user.account.eq(account)).fetchOne()
+                ?: throw IllegalArgumentException("사용자가 존재 하지 않음. id : $account")
+        return UserDto.from(self)
     }
 }

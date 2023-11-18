@@ -1,7 +1,7 @@
 package com.example.mayak.controller
 
 import com.example.mayak.dto.PostKeywordDto
-import com.example.mayak.entity.PostKeyword
+import com.example.mayak.dto.UserDto
 import com.example.mayak.entity.QUser
 import com.example.mayak.requests.LoginRequest
 import com.example.mayak.requests.PostKeywordRequest
@@ -59,5 +59,29 @@ class UserController(
             @RequestHeader headers: HttpHeaders
     ) {
         return userService.createKeywords(keywords, headers)
+    }
+
+    @GetMapping()
+    fun get(@RequestHeader headers: HttpHeaders
+    ): UserDto {
+       return userService.get(headers)
+    }
+
+    @GetMapping("/sellItems")
+    fun getSellItems(@RequestHeader headers: HttpHeaders
+    ) {
+
+    }
+
+    @GetMapping("/buyItems")
+    fun getBuyItems(@RequestHeader headers: HttpHeaders
+    ) {
+
+    }
+
+    @GetMapping("/likeItmes")
+    fun getLikeItems(@RequestHeader headers: HttpHeaders
+    ) {
+
     }
 }
