@@ -16,11 +16,14 @@ import org.springframework.transaction.annotation.Transactional
 class PostService(
         private val postRespository: PostRepository,
         private val queryFactory: JPAQueryFactory,
-        private val postLikeRepository: PostLikeRepository,
+        private val postLikeRepository: PostLikeRepository, private val postSeenRepository: PostSeenRepository,
 ) {
 
-    @Transactional(readOnly = true)
-    fun get(postId: Long): PostDto {
+    /**
+     * 게시글 데이터를 반환하고, 해당 게시글의 조회 수 를 1 증가한다.
+     */
+    @Transactional
+    fun get(postId: Long, sessionId: String): PostDto {
         val post = queryFactory.selectFrom(QPost.post)
                 .where(QPost.post.id.eq(postId))
                 .fetchOne() ?: throw IllegalArgumentException("게시글을 찾을 수 없습니다. id : $postId")
@@ -29,9 +32,28 @@ class PostService(
                 .from(QPostLike.postLike)
                 .where(QPostLike.postLike.post.eq(post))
                 .fetch()
+
         val likeCount = postLikes.size
 
-        return PostDto.from(post, likeCount)
+        val existSeens = queryFactory.selectFrom(QPostSeen.postSeen)
+                .where(QPostSeen.postSeen.post.eq(post),
+                        QPostSeen.postSeen.jSessionId.eq(sessionId))
+                .fetch()
+        if (existSeens.isEmpty()) {
+            // 같은 session에서 조회 한 경우 가 없으면, 조회 카운팅.
+            val postSeen = PostSeen(
+                    jSessionId = sessionId,
+                    post = post
+            )
+            postSeenRepository.save(postSeen)
+        }
+        val postSeens = queryFactory.selectFrom(QPostSeen.postSeen)
+                .where(QPostSeen.postSeen.post.eq(post))
+                .fetch()
+
+        val postSeenCount = postSeens.size
+
+        return PostDto.from(post, likeCount, postSeenCount)
     }
 
     @Transactional(readOnly = true)
@@ -51,7 +73,12 @@ class PostService(
                     .where(QPostLike.postLike.post.eq(it))
                     .fetch()
             val likeCount = postLikes.size
-            PostDto.from(it, likeCount)
+            val postSeens = queryFactory.selectFrom(QPostSeen.postSeen)
+                    .where(QPostSeen.postSeen.post.eq(it))
+                    .fetch()
+
+            val postSeenCount = postSeens.size
+            PostDto.from(it, likeCount, postSeenCount)
         }.toList()
     }
 

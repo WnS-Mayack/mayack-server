@@ -4,6 +4,7 @@ import com.example.mayak.dto.PostDto
 import com.example.mayak.requests.DefaultFilter
 import com.example.mayak.requests.PostRequest
 import com.example.mayak.service.PostService
+import jakarta.servlet.http.HttpServletRequest
 import org.springframework.http.HttpHeaders
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -22,9 +23,11 @@ class PostController(
 
     @GetMapping("/{id}")
     fun get(
-            @PathVariable("id") postId: Long
+            @PathVariable("id") postId: Long,
+            request: HttpServletRequest
     ): PostDto {
-        return postService.get(postId)
+        val sessionId = request.getSession().id
+        return postService.get(postId, sessionId)
     }
 
     @GetMapping()
