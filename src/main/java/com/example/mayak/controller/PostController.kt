@@ -1,5 +1,6 @@
 package com.example.mayak.controller
 
+import com.example.mayak.dto.PostDto
 import com.example.mayak.requests.PostRequest
 import com.example.mayak.service.PostService
 import org.springframework.web.bind.annotation.GetMapping
@@ -23,8 +24,8 @@ class PostController(
     }
 
     @GetMapping()
-    fun getAll() {
-        postService.getAll()
+    fun getAll() : List<PostDto>{
+        return postService.getAll()
     }
 
     @PostMapping

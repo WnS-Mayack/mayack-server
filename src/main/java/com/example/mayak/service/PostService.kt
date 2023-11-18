@@ -1,6 +1,7 @@
 package com.example.mayak.service
 
 import com.example.mayak.Repository.PostRepository
+import com.example.mayak.dto.PostDto
 import com.example.mayak.entity.Post
 import com.example.mayak.requests.PostRequest
 import org.springframework.stereotype.Service
@@ -15,8 +16,13 @@ class PostService(
 
     }
 
-    fun getAll() {
-
+    @Transactional(readOnly = true)
+    fun getAll(): List<PostDto> {
+        val posts = postRespository.findAll()
+        posts.sortByDescending { it.id }
+        return posts.map {
+            PostDto.from(it)
+        }.toList()
     }
 
     @Transactional
