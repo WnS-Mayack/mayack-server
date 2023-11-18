@@ -1,5 +1,6 @@
 package com.example.mayak.dto
 
+import com.example.mayak.entity.Comment
 import com.example.mayak.entity.Post
 import java.time.LocalDateTime
 import jakarta.persistence.Entity
@@ -18,7 +19,8 @@ data class PostDto(
         var region: String,
         var title: String,
         var modifyAt: LocalDateTime,
-        var author: UserDto
+        var author: UserDto,
+        var comments: MutableList<CommentDto>
 ) {
     companion object {
         fun from(post: Post): PostDto {
@@ -30,7 +32,8 @@ data class PostDto(
                     region = post.region,
                     title = post.title,
                     modifyAt = post.modifyAt,
-                    author = UserDto.from(post.user)
+                    author = UserDto.from(post.user),
+                    comments = post.comments.map { CommentDto.from(it) }.toMutableList()
             )
         }
     }
