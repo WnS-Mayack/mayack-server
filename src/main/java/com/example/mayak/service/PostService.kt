@@ -5,7 +5,9 @@ import com.example.mayak.dto.PostDto
 import com.example.mayak.entity.Post
 import com.example.mayak.entity.QPost
 import com.example.mayak.entity.QUser
+import com.example.mayak.requests.DefaultFilter
 import com.example.mayak.requests.PostRequest
+import com.example.mayak.utils.QueryDslUtils
 import com.querydsl.jpa.impl.JPAQueryFactory
 import org.springframework.http.HttpHeaders
 import org.springframework.stereotype.Service
@@ -26,9 +28,15 @@ class PostService(
     }
 
     @Transactional(readOnly = true)
-    fun getAll(): List<PostDto> {
-        val posts = postRespository.findAll()
-        posts.sortByDescending { it.id }
+    fun getAll(filter: DefaultFilter): List<PostDto> {
+        val posts = queryFactory.selectFrom(QPost.post)
+                .where(
+                        QueryDslUtils.contains(QPost.post.title, filter.title),
+                        QueryDslUtils.eq(QPost.post.region, filter.region),
+                        QueryDslUtils.between(QPost.post.price, filter.minPrice, filter.maxPrice)
+                )
+                .orderBy(QPost.post.id.desc())
+                .fetch()
         return posts.map {
             PostDto.from(it)
         }.toList()
