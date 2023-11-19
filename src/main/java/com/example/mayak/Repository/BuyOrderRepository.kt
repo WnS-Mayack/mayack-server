@@ -1,10 +1,11 @@
 package com.example.mayak.Repository
 
-import com.example.mayak.entity.Orders
+import com.example.mayak.entity.BuyOrders
+import com.example.mayak.entity.SellOrders
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 
 @Repository
-interface OrderRepository : JpaRepository<Orders, Long> {
+interface BuyOrderRepository : JpaRepository<BuyOrders, Long> {
 
 }

@@ -3,9 +3,9 @@ package com.example.mayak.entity
 import jakarta.persistence.*
 
 @Entity
-class Orders(
+class SellOrders(
         user: User,
-        post: Post
+        post: Post,
 ) {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -17,4 +17,5 @@ class Orders(
 
     @OneToOne
     var post: Post = post
+
 }

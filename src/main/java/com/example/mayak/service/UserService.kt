@@ -2,7 +2,9 @@ package com.example.mayak.service
 
 import com.example.mayak.Repository.RegionRepository
 import com.example.mayak.Repository.UserRepository
+import com.example.mayak.dto.PostDto
 import com.example.mayak.dto.PostKeywordDto
+import com.example.mayak.dto.UserDto
 import com.example.mayak.entity.*
 import com.example.mayak.requests.LoginRequest
 import com.example.mayak.requests.PostKeywordRequest
@@ -69,5 +71,85 @@ class UserService(
             )
         }.toList()
         postKeywordRepository.saveAll(postKeywords)
+    }
+
+    @Transactional(readOnly = true)
+    fun get(headers: HttpHeaders): UserDto {
+        val account = HttpHeadersParser.getAccount(headers)
+        val self = queryFactory.selectFrom(QUser.user).where(QUser.user.account.eq(account)).fetchOne()
+                ?: throw IllegalArgumentException("사용자가 존재 하지 않음. id : $account")
+        return UserDto.from(self)
+    }
+
+    fun getSellItems(headers: HttpHeaders): List<PostDto> {
+        val account = HttpHeadersParser.getAccount(headers)
+        val self = queryFactory.selectFrom(QUser.user).where(QUser.user.account.eq(account)).fetchOne()
+                ?: throw IllegalArgumentException("사용자가 존재 하지 않음. id : $account")
+
+        val sellOrders = queryFactory.selectFrom(QSellOrders.sellOrders)
+                .where(QSellOrders.sellOrders.user.eq(self))
+                .fetch()
+
+
+        val sellPosts = sellOrders.map {
+            it.post
+        }.toMutableList()
+
+        return sellPosts.map {
+            val post = queryFactory.selectFrom(QPost.post)
+                    .where(QPost.post.eq(it))
+                    .fetchOne() ?: throw IllegalArgumentException("에러")
+
+            PostDto.fromPostForMyPage(post)
+        }.toList()
+
+
+    }
+
+    fun getBuyItems(headers: HttpHeaders): List<PostDto> {
+        val account = HttpHeadersParser.getAccount(headers)
+        val self = queryFactory.selectFrom(QUser.user).where(QUser.user.account.eq(account)).fetchOne()
+                ?: throw IllegalArgumentException("사용자가 존재 하지 않음. id : $account")
+
+        val buyOrders = queryFactory.selectFrom(QBuyOrders.buyOrders)
+                .where(QBuyOrders.buyOrders.user.eq(self))
+                .fetch()
+
+
+        val buyPosts = buyOrders.map {
+            it.post
+        }.toMutableList()
+
+        return buyPosts.map {
+            val post = queryFactory.selectFrom(QPost.post)
+                    .where(QPost.post.eq(it))
+                    .fetchOne() ?: throw IllegalArgumentException("에러")
+
+            PostDto.fromPostForMyPage(post)
+        }.toList()
+    }
+
+    fun getlikeItems(headers: HttpHeaders): List<PostDto> {
+
+        val account = HttpHeadersParser.getAccount(headers)
+        val self = queryFactory.selectFrom(QUser.user).where(QUser.user.account.eq(account)).fetchOne()
+                ?: throw IllegalArgumentException("사용자가 존재 하지 않음. id : $account")
+
+        val likes = queryFactory.selectFrom(QPostLike.postLike)
+                .where(QPostLike.postLike.user.eq(self))
+                .fetch()
+
+
+        val likePosts = likes.map {
+            it.post
+        }.toMutableList()
+
+        return likePosts.map {
+            val post = queryFactory.selectFrom(QPost.post)
+                    .where(QPost.post.eq(it))
+                    .fetchOne() ?: throw IllegalArgumentException("에러")
+
+            PostDto.fromPostForMyPage(post)
+        }.toList()
     }
 }

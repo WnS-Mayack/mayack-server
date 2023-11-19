@@ -21,12 +21,26 @@ data class PostDto(
         var title: String,
         var modifyAt: LocalDateTime,
         var author: UserDto,
-        var comments: MutableList<CommentDto>,
+        var comments: MutableList<CommentDto>? = mutableListOf(),
         var itemStatus: ItemStatus,
-        var likeCount: Int,
-        var seenCount: Int
+        var likeCount: Int? = 0,
+        var seenCount: Int? = 0
 ) {
     companion object {
+        fun fromPostForMyPage(post: Post): PostDto {
+            return PostDto(
+                    id = post.id,
+                    description = post.description,
+                    imagePath = post.imagePath,
+                    price = post.price,
+                    region = post.region,
+                    title = post.title,
+                    modifyAt = post.modifyAt,
+                    author = UserDto.from(post.user),
+                    itemStatus = post.itemStatus,
+            )
+        }
+
         fun from(post: Post, likeCount: Int, seenCount: Int): PostDto {
             return PostDto(
                     id = post.id,
