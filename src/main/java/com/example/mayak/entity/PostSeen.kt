@@ -15,6 +15,6 @@ class PostSeen(
     @ManyToOne
     var post: Post = post
 
-    @Column(unique = true)
+//    @Column(unique = true)
     var account: String = account
 }

@@ -26,7 +26,8 @@ class PostService(
     fun get(postId: Long, headers: HttpHeaders): PostDto {
 
         val account = HttpHeadersParser.getAccount(headers)
-
+        println("######")
+        println(account)
         val post = queryFactory.selectFrom(QPost.post)
                 .where(QPost.post.id.eq(postId))
                 .fetchOne() ?: throw IllegalArgumentException("게시글을 찾을 수 없습니다. id : $postId")
