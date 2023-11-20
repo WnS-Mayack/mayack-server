@@ -3,7 +3,7 @@ package com.example.mayak.requests
 import com.example.mayak.entity.Region
 
 data class SignUpRequest(
-        var region: Long,
+        var region: String,
         var account:String,
         var password:String,
         var profileImagePath:String?,
