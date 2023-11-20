@@ -24,10 +24,9 @@ class PostController(
     @GetMapping("/{id}")
     fun get(
             @PathVariable("id") postId: Long,
-            request: HttpServletRequest
+            @RequestHeader headers: HttpHeaders,
     ): PostDto {
-        val sessionId = request.getSession().id
-        return postService.get(postId, sessionId)
+        return postService.get(postId, headers)
     }
 
     @GetMapping()

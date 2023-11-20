@@ -4,7 +4,7 @@ import jakarta.persistence.*
 
 @Entity
 class PostSeen(
-        jSessionId: String,
+        account: String,
         post: Post
 ) : Auditing() {
     @Id
@@ -15,5 +15,6 @@ class PostSeen(
     @ManyToOne
     var post: Post = post
 
-    var jSessionId: String = jSessionId
+    @Column(unique = true)
+    var account: String = account
 }

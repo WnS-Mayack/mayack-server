@@ -23,7 +23,10 @@ class PostService(
      * 게시글 데이터를 반환하고, 해당 게시글의 조회 수 를 1 증가한다.
      */
     @Transactional
-    fun get(postId: Long, sessionId: String): PostDto {
+    fun get(postId: Long, headers: HttpHeaders): PostDto {
+
+        val account = HttpHeadersParser.getAccount(headers)
+
         val post = queryFactory.selectFrom(QPost.post)
                 .where(QPost.post.id.eq(postId))
                 .fetchOne() ?: throw IllegalArgumentException("게시글을 찾을 수 없습니다. id : $postId")
@@ -37,12 +40,13 @@ class PostService(
 
         val existSeens = queryFactory.selectFrom(QPostSeen.postSeen)
                 .where(QPostSeen.postSeen.post.eq(post),
-                        QPostSeen.postSeen.jSessionId.eq(sessionId))
+                        QPostSeen.postSeen.account.eq(account))
                 .fetch()
+
         if (existSeens.isEmpty()) {
             // 같은 session에서 조회 한 경우 가 없으면, 조회 카운팅.
             val postSeen = PostSeen(
-                    jSessionId = sessionId,
+                    account = account,
                     post = post
             )
             postSeenRepository.save(postSeen)
