@@ -37,7 +37,7 @@ val snippetsDir by extra { file("build/generated-snippets") }
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-web")
-	runtimeOnly("com.mysql:mysql-connector-j")
+	runtimeOnly("mysql:mysql-connector-java:8.0.22")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.springframework.restdocs:spring-restdocs-mockmvc")
 
